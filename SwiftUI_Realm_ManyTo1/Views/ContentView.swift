@@ -13,10 +13,10 @@ struct ContentView: View {
   
   var body: some View {
 //    NavigationView {
-//      CategoryListView(items: store.items)
-//
+      CategoryListView(categories: store.categories)
+
 //    }
-    TestView(items: store.items)
+//    TestView(categories: store.categories)
   }
 }
 

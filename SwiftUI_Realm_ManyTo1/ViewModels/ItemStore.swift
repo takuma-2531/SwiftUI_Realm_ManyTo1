@@ -9,17 +9,24 @@ import RealmSwift
 
 final class ItemStore: ObservableObject {
   
-  private var itemResults: Results<CategoryDB>
+  private var categoiesResults: Results<CategoryDB>
+  private var contentsResults: Results<ContentDB>
   
   init(realm: Realm) {
-    itemResults = realm.objects(CategoryDB.self)
+    categoiesResults = realm.objects(CategoryDB.self)
+    contentsResults = realm.objects(ContentDB.self)
   }
   
-  var items: [Item] {
-    itemResults.map(Item.init)
+  var categories: [Categories] {
+    categoiesResults.map(Categories.init)
+  }
+  
+  var contents: [Contents] {
+    contentsResults.map(Contents.init)
   }
   
 }
+
 
 extension ItemStore {
   func createCategory(categoryTitle: String) {
@@ -27,19 +34,15 @@ extension ItemStore {
     
     do {
       let realm = try Realm()
+//      やっていることは下と一緒
+//      let dictionary: [String : Any] =
+//        ["id": UUID().hashValue,
+//         "categoryTitle": categoryTitle]
+//      let categoryDB = CategoryDB(value: dictionary)
       
-      let dictionary: [String : Any] =
-        ["categoryTitle": "夏休みの宿題",
-         "contentDB" : [["contentTitle": "算数"],
-                        ["contentTitle": "英語"],
-                        ["contentTitle": "社会"]]
-        ]
-      
-      let categoryDB = CategoryDB(value: dictionary)
-      
-//      let categoryDB = CategoryDB()
-//      categoryDB.id = UUID().hashValue
-//      categoryDB.categoryTitle = categoryTitle
+      let categoryDB = CategoryDB()
+      categoryDB.id = UUID().hashValue
+      categoryDB.categoryTitle = categoryTitle
       
       try realm.write {
         realm.add(categoryDB)
@@ -50,18 +53,20 @@ extension ItemStore {
     }
   }
   
-  func createContent(contentTitle: String) {
+  func createContent(categoryID: Int, contentTitle: String) {
     objectWillChange.send()
     
     do {
       let realm = try Realm()
-      let results = realm.objects(CategoryDB.self)
+      let results = realm.objects(CategoryDB.self).filter("id = %@", categoryID)
       
-      let contentDB = ContentDB(value: ["contentTitle": contentTitle])
+      let contentDB = ContentDB()
+      contentDB.id = UUID().hashValue
+      contentDB.contentTitle = contentTitle
       
       try realm.write {
         for category in results {
-          category.contentDB.append(contentDB)
+            category.contentDB.append(contentDB)
         }
       }
       
@@ -70,6 +75,18 @@ extension ItemStore {
     }
   }
   
+  func deleteAll() {
+    objectWillChange.send()
+    
+    do {
+      let realm = try Realm()
+      try realm.write {
+        realm.deleteAll()
+      }
+    } catch let error {
+      print(error.localizedDescription)
+    }
+  }
   
   
   // 以下テスト、TestViewを使って願う動きをすることを確認した。
@@ -98,7 +115,7 @@ extension ItemStore {
         print(categoryDB)
       }
       print("全部出力")
-      print(itemResults)
+      print(categoiesResults)
       
     } catch let error {
       print(error.localizedDescription)
@@ -158,7 +175,27 @@ extension ItemStore {
     }
   }
   
-  func printItems() {
-    print(items)
+  func printCategories() {
+    
+  }
+  
+  func contentArrayEnter(categoryID: Int) -> [String] {
+    
+    var contentArray = [String]()
+
+    do {
+      let realm = try Realm()
+      let results = realm.objects(CategoryDB.self).filter("id = %@", categoryID)
+      
+      
+      
+      for category in results {
+        contentArray = category.contentDB.map { $0.contentTitle}
+      }
+    } catch let error {
+      print(error.localizedDescription)
+    }
+    
+    return contentArray
   }
 }

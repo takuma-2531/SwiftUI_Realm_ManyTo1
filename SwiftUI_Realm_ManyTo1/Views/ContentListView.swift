@@ -9,37 +9,46 @@ import SwiftUI
 
 struct ContentListView: View {
   @EnvironmentObject var store: ItemStore
+  let category: Categories
+  let contents: [Contents]
   
-  // categoryTitleを渡すのは後でやろう。Item型にするのかな
-//  @Binding var categoryTitle: String
+  
+  
+  var contentArray: [String] {
+    store.contentArrayEnter(categoryID: category.id)
+  }
+  
+  
+  
   @State var contentTitle = ""
-  @State var contentTitles = ["Content1", "Content2", "Content3"]
   
   var body: some View {
     List {
-      // Section名が大文字になる。
-      Section(header: Text("セクション名：　後で表示設定")) {
+      Section(header: Text("コンテンツ一覧")) {
         HStack {
           TextField("コンテンツ名を入力してください。", text: $contentTitle)
           Button("決定", action: {
-            contentTitles.append(contentTitle)
+            store.createContent(
+              categoryID: category.id ,
+              contentTitle: contentTitle)
+            contentTitle = ""
           })
         }
-        ForEach(contentTitles, id: \.self) { rowName in
-          Text(rowName)
-        }
-        .onDelete{ offsets in
-          self.contentTitles.remove(atOffsets: offsets)
+        ForEach(contentArray, id: \.self) { content in
+          Text(content)
         }
       }
       
     }
+    .navigationTitle(Text(category.categoryTitle))
   }
+  
+  
 }
 
 struct ContentListView_Previews: PreviewProvider {
     static var previews: some View {
-      ContentListView()
-//      ContentListView(categoryTitle: .constant("test category"))
+      ContentListView(category: ItemMock.category1,
+                      contents: ItemMock.contentMock)
     }
 }
