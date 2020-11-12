@@ -9,22 +9,54 @@ import RealmSwift
 
 final class ItemStore: ObservableObject {
   
-  private var categoiesResults: Results<CategoryDB>
+  private var categoriesResults: Results<CategoryDB>
   private var contentsResults: Results<ContentDB>
+//  private var filteredContentsResults: Results<ContentDB>
   
   init(realm: Realm) {
-    categoiesResults = realm.objects(CategoryDB.self)
+    categoriesResults = realm.objects(CategoryDB.self)
     contentsResults = realm.objects(ContentDB.self)
   }
   
-  var categories: [Categories] {
-    categoiesResults.map(Categories.init)
+  var categories: [CategoryItem] {
+    categoriesResults.map(CategoryItem.init)
   }
   
-  var contents: [Contents] {
-    contentsResults.map(Contents.init)
+  var contents: [ContentItem] {
+    contentsResults.map(ContentItem.init)
   }
   
+  var c1 = { () -> () in print("Hello")}
+  
+//  なんかうまくいきそうな発想
+//  だけど今は眠くて考えらんない。からまた今度で。
+  var c3 = { (categoryID: Int) -> [ContentItem] in
+    let contentIdArray: [Int]
+    let contentTitleArray: [String]
+    var contentItem = [ContentItem]()
+    
+    do {
+      let realm = try Realm()
+      let results = realm.objects(CategoryDB.self).filter("id = %@", categoryID)
+      
+      contentIdArray = results[0].contentDB.map { $0.id }
+      contentTitleArray = results[0].contentDB.map { $0.contentTitle }
+      for i in 0..<contentIdArray.count {
+        contentItem.append(ContentItem(id: contentIdArray[i], contentTitle: contentTitleArray[i]))
+      }
+    } catch let error {
+      print(error.localizedDescription)
+    }
+    return contentItem
+  }
+  
+  
+  
+//  var filteredContents: [ContentItem] {
+//    contentsResults.filter("id = %@").map(ContentItem.init)
+//  }
+//  let results = realm.objects(CategoryDB.self).filter("id = %@", categoryID)
+//  contentArray = results[0].contentDB.map { $0.contentTitle }
 }
 
 
@@ -75,6 +107,82 @@ extension ItemStore {
     }
   }
   
+  func updateContent(contentID: Int, contentTitle: String) {
+    objectWillChange.send()
+    
+    do {
+      let realm = try Realm()
+      try realm.write {
+        realm.create(ContentDB.self, value: [
+                      "id": contentID,
+                      "contentTitle": contentTitle],
+                     update: .modified)
+      }
+    } catch let error {
+      print(error.localizedDescription)
+    }
+  }
+  
+  // 多分これエラーる。エラーらなくても、対応するcontentだけ残っちゃうはず
+  func deleteCategory(categoryID: Int) {
+    objectWillChange.send()
+    
+    guard let categoryDB = categoriesResults.first(where: { $0.id == categoryID })
+    else {
+      return
+    }
+    
+    do {
+      let realm = try Realm()
+      try realm.write {
+        realm.delete(categoryDB)
+      }
+    } catch let erorr {
+      print(erorr.localizedDescription)
+    }
+    
+  }
+  
+  func deleteContent(contentID: Int) {
+    objectWillChange.send()
+    
+    guard let contentDB = contentsResults.first(where: { $0.id == contentID })
+    else {
+      return
+    }
+    
+    do {
+      let realm = try Realm()
+      try realm.write {
+        realm.delete(contentDB)
+      }
+    } catch let erorr {
+      print(erorr.localizedDescription)
+    }
+  }
+  
+
+  func deleteFilteredContents(filteredContent: [ContentItem]) {
+    objectWillChange.send()
+    
+    for content in filteredContent {
+      guard let contentDB = contentsResults.first(where: { $0.id == content.id })
+      else {
+        return
+      }
+      
+      do {
+        let realm = try Realm()
+        try realm.write {
+          realm.delete(contentDB)
+        }
+      } catch let error {
+        print(error.localizedDescription)
+      }
+    }
+  }
+  
+//  コンテンツを一度でも追加するとエラーになる
   func deleteAll() {
     objectWillChange.send()
     
@@ -82,120 +190,44 @@ extension ItemStore {
       let realm = try Realm()
       try realm.write {
         realm.deleteAll()
+//        realm.delete(contentsResults)
+//        realm.delete(categoriesResults)
       }
     } catch let error {
       print(error.localizedDescription)
     }
   }
   
-  
-  // 以下テスト、TestViewを使って願う動きをすることを確認した。
-  // https://qiita.com/reiji_matsumura/items/df430d228577c041d61d
-  func createTest() {
-    objectWillChange.send()
-    
-    do {
-      let realm = try Realm()
-      
-      let dictionary: [String : Any] =
-        ["id": UUID().hashValue,
-         "categoryTitle": "夏休みの宿題",
-         "contentDB" : [["contentTitle" : "算数"],
-                        ["contentTitle" : "英語"],
-                        ["contentTitle" : "社会"]]
-         // ここを空にすれば、カテゴリーだけ追加できる。
-         // むしろこれなくてもOKなんかな？調査調査
-        ]
-      
-      let categoryDB = CategoryDB(value: dictionary)
-      
-      try realm.write {
-        realm.add(categoryDB)
-        print("一つだけ")
-        print(categoryDB)
-      }
-      print("全部出力")
-      print(categoiesResults)
-      
-    } catch let error {
-      print(error.localizedDescription)
-    }
-  }
-  
-  func contentCreateTest() {
-    objectWillChange.send()
-    
-    do {
-      let realm = try Realm()
-      let results = realm.objects(CategoryDB.self)
-      
-      // 追加する項目名を引数で持ってくる。
-      let contentDB = ContentDB(value: ["contentTitle": "追加追加！"])
-      
-      try realm.write {
-        
-        for category in results {
-          // idの部分を引数で持って来れればOK
-          if category.id == 1597100878461059076 {
-            category.contentDB.append(contentDB)
-          }
-        }
-      }
-      print("追加後", results)
-      
-    } catch let error {
-      print(error.localizedDescription)
-    }
-  }
-  
-  func arrayPrint() {
-    objectWillChange.send()
-    
-    do {
-      let realm = try Realm()
-      let results = realm.objects(CategoryDB.self)
-      
-      var categoryDBArray = ["id": 0,
-                             "categoryTitle": "",
-                             "contentDB": []] as [String : Any]
-      var contentDBArray: Array<String> = []
-      
-      for category in results {
-        categoryDBArray["id"] = category["id"]
-        categoryDBArray["categoryTitle"] = category["categoryTitle"]
-        for content in category["contentDB"] as! List<ContentDB> {
-          contentDBArray.append(content.contentTitle)
-        }
-      }
-      categoryDBArray["contentDB"] = contentDBArray
-      print(categoryDBArray)
-      print(contentDBArray)
-    } catch let error {
-      print(error.localizedDescription)
-    }
-  }
-  
-  func printCategories() {
-    
-  }
-  
-  func contentArrayEnter(categoryID: Int) -> [String] {
-    
-    var contentArray = [String]()
+//  やっぱこいつ[ContentItem]を返したいな
+//  返せた！？返せたよ！いけるのかこれで。。大体これでまた詰まる。
+//  けど乗り越えるんだ。
+  func filteredContent(categoryID: Int) -> [ContentItem] {
 
+    let contentIdArray: [Int]
+    let contentTitleArray: [String]
+    var contentItem = [ContentItem]()
+    
     do {
       let realm = try Realm()
       let results = realm.objects(CategoryDB.self).filter("id = %@", categoryID)
       
-      
-      
-      for category in results {
-        contentArray = category.contentDB.map { $0.contentTitle}
+      contentIdArray = results[0].contentDB.map { $0.id }
+      contentTitleArray = results[0].contentDB.map { $0.contentTitle }
+      for i in 0..<contentIdArray.count {
+        contentItem.append(ContentItem(id: contentIdArray[i], contentTitle: contentTitleArray[i]))
       }
     } catch let error {
       print(error.localizedDescription)
     }
-    
-    return contentArray
+    return contentItem
   }
+  
+  func printCategoriesResults() {
+    print(categoriesResults)
+  }
+  
+  func printContentsResults() {
+    print(contentsResults)
+  }
+  
 }

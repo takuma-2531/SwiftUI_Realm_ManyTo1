@@ -9,41 +9,82 @@ import SwiftUI
 
 struct ContentListView: View {
   @EnvironmentObject var store: ItemStore
-  let category: Categories
-  let contents: [Contents]
+  @Environment(\.presentationMode) var presentationMode
+  let category: CategoryItem
+//  filteredContentsにリネームするか
+//  でも謎Warningでるようになった。
+//  でもdeleteAllはエラー出なくなった
+  let contents: [ContentItem]
   
-  
-  
-  var contentArray: [String] {
-    store.contentArrayEnter(categoryID: category.id)
-  }
-  
-  
+//  これいらんくなったな
+//  var filteredContent: [ContentItem] {
+//    store.filteredContent(categoryID: category.id)
+//  }
   
   @State var contentTitle = ""
   
+//MARK:-
   var body: some View {
     List {
-      Section(header: Text("コンテンツ一覧")) {
-        HStack {
-          TextField("コンテンツ名を入力してください。", text: $contentTitle)
-          Button("決定", action: {
-            store.createContent(
-              categoryID: category.id ,
-              contentTitle: contentTitle)
-            contentTitle = ""
-          })
-        }
-        ForEach(contentArray, id: \.self) { content in
-          Text(content)
-        }
+      Section(header: headerView) {
+        enterContentNameRow
+        categoryListView
       }
       
     }
     .navigationTitle(Text(category.categoryTitle))
+    .navigationBarItems(trailing: trailingNavigationBarItemView)
   }
   
+  var trailingNavigationBarItemView: some View {
+    Button("カテゴリー削除になるボタン", action: deleteCategory)
+  }
   
+  var headerView: some View {
+    HStack {
+      Text("コンテンツ一覧")
+      Spacer()
+      Button("コンテンツ全削除", action: deleteFilteredContents)
+    }
+    
+  }
+  
+  var enterContentNameRow: some View {
+    HStack {
+      TextField("コンテンツ名を入力してください。", text: $contentTitle)
+      Text("決定")
+        .onTapGesture {
+          store.createContent(categoryID: category.id ,
+                              contentTitle: contentTitle)
+          contentTitle = ""
+        }
+    }
+  }
+  
+  var categoryListView: some View {
+    ForEach(contents) { content in
+      ContentRowView(content: content)
+    }
+  }
+  
+}
+
+extension ContentListView {
+  func dismiss() {
+    presentationMode.wrappedValue.dismiss()
+  }
+  
+  func deleteCategory() {
+//    store.deleteAllContent()
+//    store.deleteCategory(categoryID: category.id)
+    dismiss()
+
+  }
+  
+  func deleteFilteredContents() {
+//    store.deleteFilteredContents(filteredContent: filteredContent)
+    store.deleteAll()
+  }
 }
 
 struct ContentListView_Previews: PreviewProvider {

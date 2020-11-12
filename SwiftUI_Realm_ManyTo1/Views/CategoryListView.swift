@@ -9,39 +9,66 @@ import SwiftUI
 
 struct CategoryListView: View {
   @EnvironmentObject var store: ItemStore
-  let categories: [Categories]
+  let categories: [CategoryItem]
   
   @State var categoryTitle = ""
-  @State var categoryTitles = ["Category1", "Category2", "Category3"]
   
   var body: some View {
     NavigationView {
       List {
-        Section(header: Text("カテゴリー一覧")) {
-          HStack {
-            TextField("カテゴリー名を入力してください。", text: $categoryTitle)
-            Button("決定", action: {
-              store.createCategory(categoryTitle: categoryTitle)
-              categoryTitle = ""
-            })
-            Text("全削除")
-              .onTapGesture {store.deleteAll()}
-          }
-          ForEach(categories) { category in
-            NavigationLink(
-              destination:
-                ContentListView(category: category ,
-                                contents: store.contents)) {
-              Text(String(category.categoryTitle))
-            }
-          }
-          
+        Section(header: headerView) {
+          enterCategoryNameRow
+          categoriesListView
+          Button("カテゴリープリント", action: {
+            store.printCategoriesResults()
+          })
+          Button("コンテンツプリント", action: {
+            store.printContentsResults()
+          })
         }
-        
       }
       .navigationTitle(Text("Realm"))
     }
-    
+  }
+  
+  var headerView: some View {
+    HStack {
+      Text("カテゴリー一覧")
+      Spacer()
+      Text("全削除").onTapGesture { store.deleteAll()}
+    }
+  }
+  
+  var enterCategoryNameRow: some View {
+    HStack{
+      TextField("カテゴリー名を入力してください。", text: $categoryTitle)
+      Text("決定")
+        .onTapGesture {
+          store.createCategory(categoryTitle: categoryTitle)
+          categoryTitle = ""
+        }
+    }
+  }
+  
+  var categoriesListView: some View {
+    ForEach(categories) { category in
+      NavigationLink(
+        destination: ContentListView(category: category ,
+                                     contents: store.filteredContent(categoryID: category.id))) {
+        HStack {
+          Text(String(category.categoryTitle))
+          Spacer()
+          Image(systemName: "trash.circle.fill")
+            .resizable()
+            .frame(width: 24, height: 24)
+            .foregroundColor(.red)
+            .onTapGesture {
+//              store.deleteCategory(categoryID: category.id)
+            }
+        }
+        
+      }
+    }
   }
 }
 

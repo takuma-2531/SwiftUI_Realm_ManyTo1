@@ -14,6 +14,9 @@
 		26532143254FA90600AAFC81 /* ContentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26532142254FA90600AAFC81 /* ContentListView.swift */; };
 		2653214A254FD1BF00AAFC81 /* ItemStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26532149254FD1BF00AAFC81 /* ItemStore.swift */; };
 		2653214D255005F200AAFC81 /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2653214C255005F200AAFC81 /* TestView.swift */; };
+		2663E24C2557903E000AFF50 /* ContentFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2663E24B2557903E000AFF50 /* ContentFormView.swift */; };
+		2663E25025579761000AFF50 /* ItemEditForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2663E24F25579761000AFF50 /* ItemEditForm.swift */; };
+		2663E2532557B7A3000AFF50 /* ContentRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2663E2522557B7A3000AFF50 /* ContentRowView.swift */; };
 		26EED0B1254D624C0033BB40 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EED0B0254D624C0033BB40 /* AppDelegate.swift */; };
 		26EED0B3254D624C0033BB40 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EED0B2254D624C0033BB40 /* SceneDelegate.swift */; };
 		26EED0B5254D624C0033BB40 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EED0B4254D624C0033BB40 /* ContentView.swift */; };
@@ -31,6 +34,9 @@
 		26532142254FA90600AAFC81 /* ContentListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentListView.swift; sourceTree = "<group>"; };
 		26532149254FD1BF00AAFC81 /* ItemStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemStore.swift; sourceTree = "<group>"; };
 		2653214C255005F200AAFC81 /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
+		2663E24B2557903E000AFF50 /* ContentFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentFormView.swift; sourceTree = "<group>"; };
+		2663E24F25579761000AFF50 /* ItemEditForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemEditForm.swift; sourceTree = "<group>"; };
+		2663E2522557B7A3000AFF50 /* ContentRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentRowView.swift; sourceTree = "<group>"; };
 		26EED0AD254D624C0033BB40 /* SwiftUI_Realm_ManyTo1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftUI_Realm_ManyTo1.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26EED0B0254D624C0033BB40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		26EED0B2254D624C0033BB40 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -61,6 +67,7 @@
 			children = (
 				26532135254F9CFC00AAFC81 /* Item.swift */,
 				26532131254F996400AAFC81 /* ItemDB.swift */,
+				2663E24F25579761000AFF50 /* ItemEditForm.swift */,
 				26532138254FA1F900AAFC81 /* ItemMock.swift */,
 			);
 			path = Models;
@@ -72,6 +79,8 @@
 				26EED0B4254D624C0033BB40 /* ContentView.swift */,
 				2653213F254FA8F600AAFC81 /* CategoryListView.swift */,
 				26532142254FA90600AAFC81 /* ContentListView.swift */,
+				2663E2522557B7A3000AFF50 /* ContentRowView.swift */,
+				2663E24B2557903E000AFF50 /* ContentFormView.swift */,
 				2653214C255005F200AAFC81 /* TestView.swift */,
 			);
 			path = Views;
@@ -261,8 +270,11 @@
 				26532139254FA1F900AAFC81 /* ItemMock.swift in Sources */,
 				26532136254F9CFC00AAFC81 /* Item.swift in Sources */,
 				2653214A254FD1BF00AAFC81 /* ItemStore.swift in Sources */,
+				2663E2532557B7A3000AFF50 /* ContentRowView.swift in Sources */,
+				2663E24C2557903E000AFF50 /* ContentFormView.swift in Sources */,
 				26532143254FA90600AAFC81 /* ContentListView.swift in Sources */,
 				26532132254F996400AAFC81 /* ItemDB.swift in Sources */,
+				2663E25025579761000AFF50 /* ItemEditForm.swift in Sources */,
 				26EED0B1254D624C0033BB40 /* AppDelegate.swift in Sources */,
 				2653214D255005F200AAFC81 /* TestView.swift in Sources */,
 				26EED0B3254D624C0033BB40 /* SceneDelegate.swift in Sources */,

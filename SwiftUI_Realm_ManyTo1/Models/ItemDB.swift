@@ -20,8 +20,6 @@ class CategoryDB: Object {
 class ContentDB: Object {
   @objc dynamic var id = 0
   @objc dynamic var contentTitle = ""
-//  @objc dynamic var categoryDB: CategoryDB?
-//  let categoryDB = LinkingObjects(fromType: CategoryDB.self, property: "contentDB")
   
   override class func primaryKey() -> String? {
     "id"

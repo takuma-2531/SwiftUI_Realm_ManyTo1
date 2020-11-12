@@ -10,16 +10,16 @@ import RealmSwift
 
 struct TestView: View {
   @EnvironmentObject var store: ItemStore
-  let categories: [Categories]
+  let categories: [CategoryItem]
   
   var body: some View {
     VStack {
-      Button("テスト", action: store.createTest)
-      Button("追加", action: store.contentCreateTest)
+//      Button("テスト", action: store.createTest)
+//      Button("追加", action: store.contentCreateTest)
       Button("プリント", action: {
         print(categories)
       })
-      Button("配列のプリント", action: store.arrayPrint)
+//      Button("配列のプリント", action: store.arrayPrint)
       List {
         ForEach(categories) { item in
 //          Text(String(item.id))

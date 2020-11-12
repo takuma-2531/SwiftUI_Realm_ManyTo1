@@ -8,13 +8,13 @@
 import Foundation
 import RealmSwift
 
-
-struct Categories: Identifiable {
+// Categoryと単数系にしたいが、予約ごとかぶってエラーになるから複数形
+struct CategoryItem: Identifiable {
   let id: Int
   let categoryTitle: String
   
 }
-extension Categories {
+extension CategoryItem {
   init(categoryDB: CategoryDB) {
     id = categoryDB.id
     categoryTitle = categoryDB.categoryTitle
@@ -22,14 +22,14 @@ extension Categories {
   }
 }
 
-struct Contents: Identifiable {
+struct ContentItem: Identifiable {
   let id: Int
   let contentTitle: String
 //  let categoryId: Int
   
 }
 
-extension Contents {
+extension ContentItem {
   init(contentDB: ContentDB) {
     id = contentDB.id
     contentTitle = contentDB.contentTitle
